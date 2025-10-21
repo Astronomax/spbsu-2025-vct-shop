@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Магазин электроники</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛍️ Магазин электроники</h1>
+            <p>Лучшие гаджеты по отличным ценам!</p>
+        </div>
+
+        <h2>Товары</h2>
+        <div id="products-container" class="products-grid">
+            <div class="loading">Загрузка товаров...</div>
+        </div>
+
+        <div id="cart-container" class="cart-section">
+            <h2>🛒 Корзина</h2>
+            
+            <div id="empty-cart" class="hidden">
+                <p>Ваша корзина пуста</p>
+            </div>
+            
+            <div id="cart-items" class="hidden">
+                <!-- Cart items will be rendered here -->
+            </div>
+            
+            <div id="cart-total" class="cart-total hidden">
+                <!-- Total will be rendered here -->
+            </div>
+            
+            <button id="checkout-btn" class="btn btn-success hidden" onclick="app.checkout()">
+                Оформить заказ
+            </button>
+        </div>
+    </div>
+    <script>
+        window.appConfig = {
+            backendUrl: "{{.BackendURL}}"
+        };
+    </script>
+    <script src="/static/script.js"></script>
+</body>
+</html>
