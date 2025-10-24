@@ -1,0 +1,58 @@
+---
+- name: Simple Docker deployment
+  hosts: app_servers
+  become: yes
+  
+  tasks:
+    - name: Install Docker
+      shell: |
+        curl -fsSL https://get.docker.com -o get-docker.sh
+        sh get-docker.sh
+        usermod -aG docker ubuntu
+
+    - name: Add user to docker group
+      user:
+        name: ubuntu
+        groups: docker
+        append: yes
+
+    - name: Install Docker Compose
+      shell: |
+        curl -L "https://github.com/docker/compose/releases/download/v2.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+        chmod +x /usr/local/bin/docker-compose
+
+    - name: Start and enable Docker service
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Wait for Docker socket
+      wait_for:
+        path: /var/run/docker.sock
+        state: present
+        timeout: 30
+
+    - name: Create app directory
+      file:
+        path: /opt/app
+        state: directory
+        owner: ubuntu
+        group: ubuntu
+
+    - name: Copy docker-compose.yml
+      copy:
+        src: docker-compose.yml
+        dest: /opt/app/docker-compose.yml
+        owner: ubuntu
+        group: ubuntu
+
+    - name: Deploy application
+      shell: |
+        cd /opt/app
+        newgrp docker << EOF
+        docker-compose up -d
+        EOF
+      args:
+        executable: /bin/bash
+      become_user: ubuntu
